@@ -15,11 +15,6 @@ public class IBANController {
     @Qualifier("iBanValidator")
     IValidator iBanValidator;
 
-    @RequestMapping("/ping")
-    public String ping() {
-        return "pong";
-    }
-
     @RequestMapping(value = "/validate", method = RequestMethod.GET)
     public String validate(@RequestParam("iban") String iban) {
         boolean isValid = iBanValidator.isValid(iban);
