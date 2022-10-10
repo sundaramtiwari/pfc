@@ -46,3 +46,6 @@ Run Docker Container:
 
 `$> docker run -p8080:8080 ibanvalidator:latest`
 
+Health Check:
+
+`curl localhost:8080/ping`
