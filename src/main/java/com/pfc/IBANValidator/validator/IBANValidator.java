@@ -8,7 +8,6 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Service
-@Qualifier("iBanValidator")
 public class IBANValidator implements IValidator {
 
     private static final BigInteger NINETY_SEVEN = BigInteger.valueOf(97);
@@ -51,13 +50,13 @@ public class IBANValidator implements IValidator {
      */
     @Override
     public boolean isValid(String iban) {
-        if (iban == null) {
+        if (iban.isBlank() || iban.length() < 2) {
             return false;
         }
 
         iban = iban.replaceAll("\\s+", ""); // Remove unnecessary spaces if present
-
-        Validator formatValidator = getValidator(iban);
+        String key = iban.substring(0, 2); // Extract country code from iban
+        Validator formatValidator = formatValidators.get(key);
 
         if (formatValidator == null
                 || iban.length() != formatValidator.getLengthOfIBAN()
@@ -65,6 +64,10 @@ public class IBANValidator implements IValidator {
             return false;
         }
 
+        return checkIBANDigits(iban);
+    }
+
+    private static boolean checkIBANDigits(String iban) {
         String reformattedCode = iban.substring(4) + iban.substring(0, 4);
         StringBuilder numericIban = new StringBuilder();
 
@@ -73,20 +76,6 @@ public class IBANValidator implements IValidator {
         }
 
         return new BigInteger(numericIban.toString()).mod(NINETY_SEVEN).equals(BigInteger.ONE);
-    }
-
-    /**
-     * Get the Validator for a given IBAN
-     *
-     * @param code a string starting with the ISO country code (e.g. an IBAN)
-     * @return the validator or {@code null} if there is not one registered.
-     */
-    private Validator getValidator(String code) {
-        if (code == null || code.length() < 2) { // ensure we can extract the code
-            return null;
-        }
-        String key = code.substring(0, 2);
-        return formatValidators.get(key);
     }
 
 }
