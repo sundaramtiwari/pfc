@@ -50,7 +50,7 @@ public class IBANValidator implements IValidator {
      */
     @Override
     public boolean isValid(String iban) {
-        if (iban.isBlank() || iban.length() < 2) {
+        if (iban == null || iban.isBlank() || iban.length() < 2) {
             return false;
         }
 
